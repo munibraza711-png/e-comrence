@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERTEX — Engineered for Tomorrow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+/* ============================= TOKENS ============================= */
+:root{
+  --bg:#05070c;
+  --bg-2:#0a0e17;
+  --bg-3:#0d1220;
+  --glass: rgba(18,22,34,0.55);
+  --glass-soft: rgba(18,22,34,0.32);
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+  --green:#39ff8a;
+  --green-dim:#1c6b3e;
+  --purple:#8b5cf6;
+  --blue:#3ea6ff;
+  --text:#eef2f7;
+  --muted:#8993a8;
+  --muted-2:#5c6478;
+  --danger:#ff4d6d;
+  --radius:18px;
+  --radius-sm:10px;
+  --ease: cubic-bezier(.16,.84,.44,1);
+}
+html.light{
+  --bg:#f3f5f9;
+  --bg-2:#e9edf4;
+  --bg-3:#ffffff;
+  --glass: rgba(255,255,255,0.6);
+  --glass-soft: rgba(255,255,255,0.4);
+  --border: rgba(10,15,25,0.08);
+  --border-strong: rgba(10,15,25,0.14);
+  --text:#0b0e14;
+  --muted:#4a5266;
+  --muted-2:#7b8296;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+  transition:background .5s var(--ease), color .5s var(--ease);
+}
+::selection{background:var(--green);color:#000;}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.02em;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+img{max-width:100%;display:block;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:var(--bg-2);}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--green),var(--purple));border-radius:10px;}
+
+/* ============================= UTILITIES ============================= */
+.glass{
+  background:var(--glass);
+  backdrop-filter:blur(20px) saturate(140%);
+  -webkit-backdrop-filter:blur(20px) saturate(140%);
+  border:1px solid var(--border);
+}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--green);
+  display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:'';width:24px;height:1px;background:var(--green);box-shadow:0 0 8px var(--green);}
+.btn{
+  padding:14px 30px;
+  border-radius:100px;
+  font-weight:600;
+  font-size:.92rem;
+  display:inline-flex;align-items:center;gap:10px;
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease);
+  white-space:nowrap;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--green),#0be881);
+  color:#031007;
+  box-shadow:0 0 0 rgba(57,255,138,0);
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 40px -8px rgba(57,255,138,.55);}
+.btn-ghost{
+  border:1px solid var(--border-strong);
+  color:var(--text);
+}
+.btn-ghost:hover{border-color:var(--green);color:var(--green);transform:translateY(-3px);}
+.section{position:relative;padding:140px 8vw;overflow:hidden;}
+.section-head{max-width:640px;margin-bottom:64px;}
+.section-head h2{font-size:clamp(2rem,4.2vw,3.2rem);margin-top:16px;line-height:1.08;}
+.section-head p{color:var(--muted);margin-top:18px;font-size:1.05rem;line-height:1.6;}
+.reveal{opacity:0;transform:translateY(60px);}
+.container{max-width:1400px;margin:0 auto;}
+.hidden{display:none !important;}
+.grad-text{
+  background:linear-gradient(100deg,var(--green),var(--blue) 50%,var(--purple));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* ============================= PRELOADER ============================= */
+#preloader{
+  position:fixed;inset:0;z-index:9999;background:#05070c;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;
+  transition:opacity .8s var(--ease), visibility .8s;
+}
+#preloader.done{opacity:0;visibility:hidden;pointer-events:none;}
+.pre-logo{
+  font-family:'Space Grotesk';font-size:2.4rem;font-weight:700;letter-spacing:.08em;
+  color:var(--text);
+}
+.pre-logo span{color:var(--green);}
+.pre-bar{width:260px;height:2px;background:rgba(255,255,255,.1);position:relative;overflow:hidden;border-radius:2px;}
+.pre-bar i{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,var(--green),var(--blue));box-shadow:0 0 12px var(--green);}
+.pre-pct{font-family:'JetBrains Mono';font-size:.75rem;color:var(--muted);letter-spacing:.1em;}
+
+/* ============================= CURSOR GLOW ============================= */
+#cursor-glow{
+  position:fixed;width:420px;height:420px;border-radius:50%;pointer-events:none;z-index:2;
+  background:radial-gradient(circle,rgba(57,255,138,.06),rgba(139,92,246,.05) 45%,transparent 70%);
+  transform:translate(-50%,-50%);transition:opacity .3s;
+}
+@media(max-width:900px){#cursor-glow{display:none;}}
+
+/* ============================= NAV ============================= */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:26px 5vw;transition:all .45s var(--ease);
+}
+#nav.scrolled{padding:14px 5vw;background:var(--glass);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Space Grotesk';font-weight:700;font-size:1.4rem;letter-spacing:.04em;display:flex;align-items:center;gap:8px;}
+.logo i{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);display:inline-block;}
+.nav-links{display:flex;gap:38px;font-size:.9rem;font-weight:500;}
+.nav-links a{position:relative;color:var(--muted);transition:color .3s;}
+.nav-links a:hover{color:var(--text);}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-6px;height:1px;width:0;background:var(--green);transition:width .3s var(--ease);}
+.nav-links a:hover::after{width:100%;}
+.nav-actions{display:flex;align-items:center;gap:18px;}
+.icon-btn{
+  width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border-strong);position:relative;transition:all .3s var(--ease);
+}
+.icon-btn:hover{border-color:var(--green);color:var(--green);transform:translateY(-2px);}
+.badge{
+  position:absolute;top:-6px;right:-6px;background:var(--green);color:#031007;font-size:.62rem;font-weight:700;
+  width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
+.search-wrap{position:relative;}
+.search-input{
+  width:0;opacity:0;padding:0;border:1px solid transparent;border-radius:100px;background:var(--glass);
+  color:var(--text);font-size:.85rem;transition:all .4s var(--ease);position:absolute;right:48px;top:50%;
+  transform:translateY(-50%);height:40px;
+}
+.search-wrap.open .search-input{width:240px;opacity:1;padding:0 16px;border-color:var(--border-strong);}
+.suggestions{
+  position:absolute;top:52px;right:0;width:280px;border-radius:14px;overflow:hidden;display:none;
+}
+.search-wrap.open .suggestions.show{display:block;}
+.sugg-item{padding:12px 16px;display:flex;justify-content:space-between;font-size:.85rem;border-bottom:1px solid var(--border);transition:background .2s;}
+.sugg-item:hover{background:rgba(57,255,138,.08);}
+.sugg-item span:last-child{color:var(--green);font-family:'JetBrains Mono';font-size:.78rem;}
+
+/* ============================= HERO ============================= */
+#hero{
+  height:100vh;position:relative;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);
+}
+.hero-bg{position:absolute;inset:0;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;}
+.blob-1{width:600px;height:600px;background:radial-gradient(circle,var(--green),transparent 70%);top:-200px;left:-150px;}
+.blob-2{width:700px;height:700px;background:radial-gradient(circle,var(--purple),transparent 70%);bottom:-260px;right:-200px;}
+.blob-3{width:500px;height:500px;background:radial-gradient(circle,var(--blue),transparent 70%);top:40%;left:60%;}
+.grid-overlay{
+  position:absolute;inset:0;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(ellipse at center, black 10%, transparent 70%);
+  opacity:.5;
+}
+.hero-content{position:relative;z-index:5;text-align:center;max-width:900px;padding:0 24px;}
+.hero-content .eyebrow{justify-content:center;margin-bottom:24px;}
+.hero-content h1{
+  font-size:clamp(2.6rem,7.5vw,6rem);line-height:1.02;font-weight:700;
+}
+.hero-content p{color:var(--muted);font-size:1.15rem;margin:26px auto 40px;max-width:560px;line-height:1.6;}
+.hero-actions{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+.scroll-cue{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;
+  align-items:center;gap:10px;color:var(--muted-2);font-family:'JetBrains Mono';font-size:.7rem;letter-spacing:.15em;
+}
+.scroll-cue .line{width:1px;height:40px;background:linear-gradient(var(--green),transparent);animation:scrollpulse 2s infinite;}
+@keyframes scrollpulse{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+
+/* ============================= MARQUEE ============================= */
+.marquee-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:22px 0;overflow:hidden;background:var(--bg-2);}
+.marquee{display:flex;gap:60px;white-space:nowrap;animation:scroll-x 26s linear infinite;width:max-content;}
+.marquee span{font-family:'JetBrains Mono';font-size:.85rem;letter-spacing:.15em;color:var(--muted-2);text-transform:uppercase;display:flex;align-items:center;gap:14px;}
+.marquee span::after{content:'◆';color:var(--green);font-size:.6rem;}
+@keyframes scroll-x{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ============================= PRODUCT CARDS ============================= */
+.grid-products{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:28px;}
+.card{
+  border-radius:var(--radius);padding:22px;position:relative;overflow:hidden;cursor:pointer;
+  transition:transform .5s var(--ease), border-color .4s;
+  transform-style:preserve-3d;
+}
+.card:hover{border-color:var(--border-strong);}
+.card-visual{
+  height:200px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;
+  background:radial-gradient(circle at 30% 20%, rgba(255,255,255,.05), transparent 60%), var(--bg-3);
+  position:relative;overflow:hidden;
+}
+.card-visual svg{width:60%;height:60%;filter:drop-shadow(0 0 18px rgba(57,255,138,.35));}
+.card-cat{font-family:'JetBrains Mono';font-size:.68rem;color:var(--green);letter-spacing:.12em;text-transform:uppercase;}
+.card h3{font-size:1.15rem;margin:8px 0 6px;}
+.card .desc{color:var(--muted);font-size:.85rem;line-height:1.5;margin-bottom:14px;min-height:40px;}
+.card-foot{display:flex;justify-content:space-between;align-items:center;}
+.price{font-family:'JetBrains Mono';font-size:1.1rem;font-weight:500;}
+.price .was{color:var(--muted-2);text-decoration:line-through;font-size:.8rem;margin-right:6px;}
+.card-btns{display:flex;gap:8px;}
+.wish-btn{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--border-strong);display:flex;align-items:center;
+  justify-content:center;transition:all .3s;
+}
+.wish-btn.active{color:var(--danger);border-color:var(--danger);}
+.wish-btn:hover{transform:scale(1.1);}
+.add-btn{
+  width:38px;height:38px;border-radius:50%;background:var(--green);color:#031007;display:flex;align-items:center;
+  justify-content:center;transition:transform .3s;
+}
+.add-btn:hover{transform:scale(1.12) rotate(90deg);}
+.rating{display:flex;gap:2px;color:var(--green);font-size:.75rem;margin-bottom:8px;}
+
+/* ============================= CATEGORIES ============================= */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;}
+.cat-tile{
+  height:220px;border-radius:var(--radius);position:relative;overflow:hidden;display:flex;align-items:flex-end;
+  padding:24px;cursor:pointer;isolation:isolate;
+}
+.cat-tile::before{
+  content:'';position:absolute;inset:0;z-index:-1;background:var(--bg-3);transition:transform .6s var(--ease);
+}
+.cat-tile::after{
+  content:'';position:absolute;inset:0;z-index:-1;opacity:.35;transition:opacity .5s;
+  background:radial-gradient(circle at 70% 20%, var(--tint,var(--green)), transparent 60%);
+}
+.cat-tile:hover::before{transform:scale(1.08);}
+.cat-tile:hover::after{opacity:.6;}
+.cat-tile h4{font-size:1.3rem;}
+.cat-tile span{color:var(--muted);font-size:.8rem;font-family:'JetBrains Mono';}
+
+/* ============================= FILTER / CATALOG ============================= */
+.catalog-layout{display:grid;grid-template-columns:260px 1fr;gap:40px;align-items:start;}
+.filters{position:sticky;top:110px;border-radius:var(--radius);padding:26px;}
+.filters h4{font-size:.9rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px;color:var(--muted);}
+.filter-group{margin-bottom:26px;}
+.filter-opt{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:.88rem;color:var(--muted);cursor:pointer;transition:color .2s;}
+.filter-opt:hover{color:var(--text);}
+.filter-opt input{accent-color:var(--green);width:16px;height:16px;}
+.range-row{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:.78rem;color:var(--green);margin-top:8px;}
+input[type=range]{width:100%;accent-color:var(--green);}
+.sort-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;flex-wrap:wrap;gap:14px;}
+.sort-bar select{
+  background:var(--glass);border:1px solid var(--border-strong);color:var(--text);padding:10px 16px;border-radius:100px;font-size:.85rem;
+}
+@media(max-width:900px){.catalog-layout{grid-template-columns:1fr;}.filters{position:static;}}
+
+/* ============================= TESTIMONIALS ============================= */
+.test-track{display:flex;gap:26px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;}
+.test-track::-webkit-scrollbar{display:none;}
+.test-card{min-width:340px;scroll-snap-align:start;border-radius:var(--radius);padding:32px;}
+.test-card .stars{color:var(--green);margin-bottom:16px;}
+.test-card p{font-size:1rem;line-height:1.6;color:var(--text);margin-bottom:22px;}
+.test-who{display:flex;align-items:center;gap:12px;}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:700;color:#031007;font-family:'Space Grotesk';}
+.test-who small{color:var(--muted);display:block;font-size:.78rem;}
+
+/* ============================= CTA BANNER ============================= */
+.cta-banner{
+  border-radius:28px;padding:80px 6vw;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(135deg, rgba(57,255,138,.08), rgba(139,92,246,.08));
+  border:1px solid var(--border-strong);
+}
+.cta-banner h2{font-size:clamp(1.8rem,4vw,3rem);margin-bottom:20px;}
+.cta-banner p{color:var(--muted);max-width:520px;margin:0 auto 34px;}
+
+/* ============================= CONTACT ============================= */
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.field{margin-bottom:22px;}
+.field label{display:block;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.field input,.field textarea{
+  width:100%;padding:15px 18px;border-radius:12px;background:var(--glass-soft);border:1px solid var(--border-strong);
+  color:var(--text);font-family:inherit;font-size:.95rem;transition:border-color .3s, box-shadow .3s;
+}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 4px rgba(57,255,138,.12);}
+.field textarea{min-height:140px;resize:vertical;}
+.contact-info{display:flex;flex-direction:column;gap:22px;}
+.info-row{display:flex;gap:16px;align-items:flex-start;}
+.info-row .ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.info-row h5{font-size:.95rem;margin-bottom:4px;}
+.info-row span{color:var(--muted);font-size:.85rem;}
+.success-box{
+  display:none;text-align:center;padding:60px 20px;
+}
+.success-box.show{display:block;animation:popIn .5s var(--ease);}
+@keyframes popIn{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+.check-circle{
+  width:84px;height:84px;border-radius:50%;border:2px solid var(--green);display:flex;align-items:center;justify-content:center;
+  margin:0 auto 22px;box-shadow:0 0 40px rgba(57,255,138,.4);
+}
+@media(max-width:900px){.contact-layout{grid-template-columns:1fr;}}
+
+/* ============================= FOOTER ============================= */
+footer{padding:100px 6vw 0;border-top:1px solid var(--border);background:var(--bg-2);}
+.footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:70px;}
+.footer-col h5{font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:20px;}
+.footer-col a{display:block;color:var(--muted);font-size:.9rem;margin-bottom:12px;transition:color .3s;}
+.footer-col a:hover{color:var(--green);}
+.footer-brand p{color:var(--muted);font-size:.9rem;margin:16px 0 22px;max-width:280px;line-height:1.6;}
+.social-row{display:flex;gap:12px;}
+.newsletter{display:flex;gap:0;border-radius:100px;overflow:hidden;border:1px solid var(--border-strong);max-width:300px;}
+.newsletter input{flex:1;background:transparent;border:none;padding:12px 16px;color:var(--text);font-size:.85rem;}
+.newsletter button{background:var(--green);color:#031007;padding:0 20px;font-weight:600;font-size:.85rem;}
+.footer-bottom{
+  border-top:1px solid var(--border);padding:26px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+  color:var(--muted-2);font-size:.82rem;
+}
+.dev-signature{
+  margin:0 0 40px;padding:36px;border-radius:22px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg, rgba(57,255,138,.06), rgba(139,92,246,.08));
+  border:1px solid var(--border-strong);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;
+}
+.dev-signature::before{
+  content:'</>';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono';
+  font-size:6rem;opacity:.05;font-weight:700;
+}
+.dev-left{display:flex;align-items:center;gap:20px;}
+.dev-avatar{
+  width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--purple),var(--blue));
+  display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:1.4rem;color:#05070c;
+  box-shadow:0 0 30px rgba(57,255,138,.35);
+}
+.dev-name{font-family:'Space Grotesk';font-size:1.3rem;font-weight:700;}
+.dev-role{font-family:'JetBrains Mono';font-size:.78rem;color:var(--green);letter-spacing:.08em;margin-top:4px;}
+.dev-contact{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+.dev-contact a{
+  font-family:'JetBrains Mono';font-size:.82rem;padding:10px 18px;border-radius:100px;border:1px solid var(--border-strong);
+  transition:all .3s;
+}
+.dev-contact a:hover{border-color:var(--green);color:var(--green);transform:translateY(-2px);}
+@media(max-width:900px){.footer-top{grid-template-columns:1fr 1fr;}.dev-signature{flex-direction:column;align-items:flex-start;}}
+
+/* ============================= DRAWERS / MODALS ============================= */
+.overlay{
+  position:fixed;inset:0;background:rgba(2,3,6,.65);backdrop-filter:blur(4px);z-index:800;opacity:0;visibility:hidden;
+  transition:opacity .4s var(--ease), visibility .4s;
+}
+.overlay.show{opacity:1;visibility:visible;}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(420px,92vw);z-index:900;transform:translateX(100%);
+  transition:transform .5s var(--ease);display:flex;flex-direction:column;padding:30px;
+  background:var(--bg-2);border-left:1px solid var(--border-strong);
+}
+.drawer.show{transform:translateX(0);}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;}
+.drawer-head h3{font-size:1.3rem;}
+.close-x{width:36px;height:36px;border-radius:50%;border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;transition:all .3s;}
+.close-x:hover{border-color:var(--danger);color:var(--danger);transform:rotate(90deg);}
+.cart-items{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:18px;}
+.cart-item{display:flex;gap:14px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.ci-visual{width:70px;height:70px;border-radius:12px;background:var(--bg-3);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.ci-visual svg{width:60%;height:60%;}
+.ci-info{flex:1;}
+.ci-info h5{font-size:.92rem;margin-bottom:4px;}
+.ci-info .price{font-size:.85rem;}
+.qty-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.qty-btn{width:24px;height:24px;border-radius:6px;border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:.8rem;}
+.remove-x{color:var(--muted-2);font-size:.78rem;margin-left:auto;transition:color .2s;}
+.remove-x:hover{color:var(--danger);}
+.cart-empty{text-align:center;padding:60px 0;color:var(--muted);}
+.cart-empty svg{width:60px;height:60px;margin:0 auto 18px;opacity:.4;}
+.drawer-foot{border-top:1px solid var(--border);padding-top:22px;margin-top:16px;}
+.drawer-total{display:flex;justify-content:space-between;margin-bottom:18px;font-size:1.05rem;}
+.drawer-total .price{font-size:1.2rem;color:var(--green);}
+.full-btn{width:100%;text-align:center;justify-content:center;}
+
+.modal{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-46%);z-index:900;width:min(900px,92vw);
+  max-height:86vh;overflow-y:auto;border-radius:24px;padding:40px;opacity:0;visibility:hidden;
+  transition:opacity .4s var(--ease), transform .4s var(--ease), visibility .4s;
+  background:var(--bg-2);border:1px solid var(--border-strong);
+}
+.modal.show{opacity:1;visibility:visible;transform:translate(-50%,-50%);}
+.modal-close{position:absolute;top:22px;right:22px;}
+.modal-sm{width:min(420px,92vw);}
+
+.pd-layout{display:grid;grid-template-columns:1fr 1fr;gap:44px;}
+.pd-visual{border-radius:18px;background:var(--bg-3);height:380px;display:flex;align-items:center;justify-content:center;}
+.pd-visual svg{width:55%;height:55%;filter:drop-shadow(0 0 24px rgba(57,255,138,.4));}
+.pd-specs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0;font-family:'JetBrains Mono';font-size:.8rem;}
+.pd-specs div{padding:10px;border:1px solid var(--border);border-radius:8px;color:var(--muted);}
+.pd-specs div b{color:var(--text);display:block;font-size:.9rem;}
+.pd-reviews{margin-top:20px;border-top:1px solid var(--border);padding-top:20px;}
+.pd-review{padding:14px 0;border-bottom:1px solid var(--border);}
+.pd-review h6{font-size:.88rem;margin-bottom:4px;}
+.pd-review p{font-size:.85rem;color:var(--muted);}
+@media(max-width:760px){.pd-layout{grid-template-columns:1fr;}}
+
+.auth-tabs{display:flex;gap:10px;margin-bottom:26px;border:1px solid var(--border-strong);border-radius:100px;padding:4px;}
+.auth-tab{flex:1;text-align:center;padding:10px;border-radius:100px;font-size:.85rem;font-weight:600;color:var(--muted);transition:all .3s;}
+.auth-tab.active{background:var(--green);color:#031007;}
+
+.dash-tabs{display:flex;gap:26px;border-bottom:1px solid var(--border);margin-bottom:26px;}
+.dash-tab{padding-bottom:14px;color:var(--muted);font-size:.9rem;font-weight:500;border-bottom:2px solid transparent;transition:all .3s;}
+.dash-tab.active{color:var(--green);border-color:var(--green);}
+.order-row{display:flex;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--border);font-size:.88rem;}
+.order-row .status{font-family:'JetBrains Mono';font-size:.72rem;padding:4px 12px;border-radius:100px;background:rgba(57,255,138,.12);color:var(--green);}
+
+.admin-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+.admin-table th{text-align:left;padding:10px;color:var(--muted);border-bottom:1px solid var(--border-strong);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;}
+.admin-table td{padding:12px 10px;border-bottom:1px solid var(--border);}
+.admin-table button{padding:6px 12px;border-radius:8px;border:1px solid var(--border-strong);font-size:.75rem;margin-right:6px;transition:all .2s;}
+.admin-table button:hover{border-color:var(--green);color:var(--green);}
+.admin-table button.del:hover{border-color:var(--danger);color:var(--danger);}
+.admin-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:30px;}
+.admin-form .field{margin-bottom:0;}
+.admin-form .full{grid-column:1/-1;}
+
+.toast-stack{position:fixed;top:24px;right:24px;z-index:1000;display:flex;flex-direction:column;gap:12px;}
+.toast{
+  padding:16px 22px;border-radius:14px;display:flex;align-items:center;gap:12px;min-width:260px;
+  transform:translateX(140%);transition:transform .5s var(--ease);
+  background:var(--bg-2);border:1px solid var(--border-strong);
+}
+.toast.show{transform:translateX(0);}
+.toast .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0;}
+
+.theme-toggle,.music-toggle{position:relative;}
+.tt-track{width:44px;height:24px;border-radius:100px;border:1px solid var(--border-strong);position:relative;transition:all .3s;}
+.tt-dot{width:18px;height:18px;border-radius:50%;background:var(--green);position:absolute;top:2px;left:2px;transition:all .3s var(--ease);}
+html.light .tt-dot{left:23px;background:var(--purple);}
+
+@media(max-width:760px){
+  .section{padding:100px 6vw;}
+  .nav-links{display:none;}
+  .footer-top{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================= PRELOADER ============================= -->
+<div id="preloader">
+  <div class="pre-logo">VERT<span>E</span>X</div>
+  <div class="pre-bar"><i id="preBarFill"></i></div>
+  <div class="pre-pct mono" id="prePct">INITIALIZING · 0%</div>
+</div>
+
+<div id="cursor-glow"></div>
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- ============================= NAV ============================= -->
+<nav id="nav">
+  <div class="logo"><i></i>VERTEX</div>
+  <div class="nav-links">
+    <a href="#hero">Home</a>
+    <a href="#catalog">Shop</a>
+    <a href="#categories">Categories</a>
+    <a href="#testimonials">Reviews</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-actions">
+    <div class="search-wrap" id="searchWrap">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
+      <div class="suggestions glass" id="suggestions"></div>
+      <button class="icon-btn" id="searchToggle">🔍</button>
+    </div>
+    <button class="icon-btn theme-toggle" id="themeToggle" title="Toggle theme">
+      <span class="tt-track"><span class="tt-dot"></span></span>
+    </button>
+    <button class="icon-btn music-toggle" id="musicToggle" title="Ambient sound">🔇</button>
+    <button class="icon-btn" id="wishToggle">♡<span class="badge hidden" id="wishBadge">0</span></button>
+    <button class="icon-btn" id="cartToggle">🛒<span class="badge hidden" id="cartBadge">0</span></button>
+    <button class="icon-btn" id="accountToggle">👤</button>
+  </div>
+</nav>
+
+<!-- ============================= HERO ============================= -->
+<section id="hero">
+  <div class="hero-bg">
+    <div class="blob blob-1" id="blob1"></div>
+    <div class="blob blob-2" id="blob2"></div>
+    <div class="blob blob-3" id="blob3"></div>
+    <div class="grid-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <div class="eyebrow">NEXT-GEN HARDWARE COLLECTION · 2026</div>
+    <h1>Engineered for a<br><span class="grad-text">Future You Can Feel</span></h1>
+    <p>Premium neural, optical and ambient devices built by obsessives — for people who refuse to wait for the future to arrive.</p>
+    <div class="hero-actions">
+      <a href="#catalog" class="btn btn-primary">Explore the Collection →</a>
+      <a href="#categories" class="btn btn-ghost">View Categories</a>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>SCROLL</span><span class="line"></span></div>
+</section>
+
+<!-- ============================= MARQUEE ============================= -->
+<div class="marquee-wrap">
+  <div class="marquee" id="marquee"></div>
+</div>
+
+<!-- ============================= FEATURED ============================= -->
+<section class="section" id="featured">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">CURATED DROP</div>
+      <h2>Featured This <span class="grad-text">Cycle</span></h2>
+      <p>A rotating edit of our most requested devices — chosen for design, performance, and the way they feel in your hand at 2am.</p>
+    </div>
+    <div class="grid-products" id="featuredGrid"></div>
+  </div>
+</section>
+
+<!-- ============================= CATEGORIES ============================= -->
+<section class="section" id="categories">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">BROWSE BY SYSTEM</div>
+      <h2>Five Categories.<br>One <span class="grad-text">Standard.</span></h2>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+</section>
+
+<!-- ============================= CATALOG ============================= -->
+<section class="section" id="catalog">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">FULL CATALOG</div>
+      <h2>Every Device.<br><span class="grad-text">Every Spec.</span></h2>
+    </div>
+    <div class="catalog-layout">
+      <aside class="filters glass reveal">
+        <h4>Category</h4>
+        <div class="filter-group" id="catFilters"></div>
+        <h4>Max Price</h4>
+        <div class="filter-group">
+          <input type="range" min="150" max="900" value="900" id="priceRange">
+          <div class="range-row"><span>$150</span><span id="priceVal">$900</span></div>
+        </div>
+        <h4>Availability</h4>
+        <div class="filter-group">
+          <label class="filter-opt"><input type="checkbox" id="inStockOnly"> In stock only</label>
+        </div>
+        <button class="btn btn-ghost full-btn" id="resetFilters">Reset Filters</button>
+      </aside>
+      <div>
+        <div class="sort-bar reveal">
+          <span class="mono" id="resultCount" style="color:var(--muted);font-size:.85rem;">-- results</span>
+          <select id="sortSelect">
+            <option value="pop">Sort: Popularity</option>
+            <option value="lowhigh">Price: Low to High</option>
+            <option value="highlow">Price: High to Low</option>
+            <option value="rating">Highest Rated</option>
+          </select>
+        </div>
+        <div class="grid-products" id="catalogGrid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= TESTIMONIALS ============================= -->
+<section class="section" id="testimonials">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">FIELD REPORTS</div>
+      <h2>Trusted by People Who<br><span class="grad-text">Notice Details.</span></h2>
+    </div>
+    <div class="test-track" id="testTrack"></div>
+  </div>
+</section>
+
+<!-- ============================= CTA ============================= -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="cta-banner reveal">
+      <div class="eyebrow" style="justify-content:center;">MEMBERSHIP</div>
+      <h2>Get Early Access to <span class="grad-text">Drops</span></h2>
+      <p>Join the Vertex list for first access to limited releases, member-only pricing, and prototype previews.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Join the List</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= CONTACT ============================= -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">GET IN TOUCH</div>
+      <h2>Let's Talk <span class="grad-text">Specs.</span></h2>
+      <p>Questions about an order, a partnership, or a custom build? Send a message — a human reads every one.</p>
+    </div>
+    <div class="contact-layout">
+      <div class="glass reveal" style="border-radius:var(--radius);padding:36px;">
+        <form id="contactForm">
+          <div class="field">
+            <label>Full Name</label>
+            <input type="text" id="cName" required placeholder="Your name">
+          </div>
+          <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="cEmail" required placeholder="you@email.com">
+          </div>
+          <div class="field">
+            <label>Message</label>
+            <textarea id="cMessage" required placeholder="Tell us what's on your mind..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary full-btn" id="sendBtn">Send Message →</button>
+        </form>
+        <div class="success-box" id="successBox">
+          <div class="check-circle"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M4 12.5L9.5 18L20 6" stroke="#39ff8a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>Message Sent</h3>
+          <p style="color:var(--muted);margin-top:10px;">Thanks — we'll get back to you within 24 hours.</p>
+          <button class="btn btn-ghost" style="margin-top:24px;" onclick="resetContactForm()">Send Another</button>
+        </div>
+      </div>
+      <div class="contact-info reveal">
+        <div class="info-row glass" style="border-radius:14px;padding:18px;">
+          <div class="ic" style="background:rgba(57,255,138,.12);color:var(--green);">✉</div>
+          <div><h5>Email Support</h5><span>support@vertex-store.dev</span></div>
+        </div>
+        <div class="info-row glass" style="border-radius:14px;padding:18px;">
+          <div class="ic" style="background:rgba(139,92,246,.14);color:var(--purple);">📍</div>
+          <div><h5>Studio</h5><span>Remote-first · Worldwide shipping</span></div>
+        </div>
+        <div class="info-row glass" style="border-radius:14px;padding:18px;">
+          <div class="ic" style="background:rgba(62,166,255,.14);color:var(--blue);">⏱</div>
+          <div><h5>Response Time</h5><span>Under 24 hours, every day</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= FOOTER ============================= -->
+<footer>
+  <div class="container">
+    <div class="dev-signature">
+      <div class="dev-left">
+        <div class="dev-avatar">MR</div>
+        <div>
+          <div class="dev-name">Muneeb Raza</div>
+          <div class="dev-role">FULL STACK DEVELOPER</div>
+        </div>
+      </div>
+      <div class="dev-contact">
+        <a href="mailto:munibraza711@gmail.com">✉ munibraza711@gmail.com</a>
+        <a href="#hero">Designed &amp; Developed by Muneeb Raza</a>
+      </div>
+    </div>
+    <div class="footer-top">
+      <div class="footer-col footer-brand">
+        <div class="logo"><i></i>VERTEX</div>
+        <p>Premium hardware for people building tomorrow. Every device engineered, not assembled.</p>
+        <div class="newsletter">
+          <input type="text" placeholder="Your email">
+          <button onclick="pushToast('Subscribed to updates')">Join</button>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Shop</h5>
+        <a href="#catalog">All Products</a>
+        <a href="#categories">Categories</a>
+        <a href="#featured">Featured</a>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <a href="#testimonials">Reviews</a>
+        <a href="#contact">Contact</a>
+        <a href="#" onclick="openAdminModal();return false;">Admin</a>
+      </div>
+      <div class="footer-col">
+        <h5>Account</h5>
+        <a href="#" onclick="openAuthModal();return false;">Login / Signup</a>
+        <a href="#" onclick="openCart();return false;">Cart</a>
+        <a href="#" onclick="openWishlist();return false;">Wishlist</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 VERTEX. All rights reserved.</span>
+      <span>Designed &amp; Developed by <b style="color:var(--green);">Muneeb Raza</b></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================= OVERLAY ============================= -->
+<div class="overlay" id="overlay"></div>
+
+<!-- ============================= CART DRAWER ============================= -->
+<div class="drawer" id="cartDrawer">
+  <div class="drawer-head"><h3>Your Cart</h3><button class="close-x" onclick="closeAllPanels()">✕</button></div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="drawer-foot" id="cartFoot">
+    <div class="drawer-total"><span>Total</span><span class="price" id="cartTotal">$0</span></div>
+    <button class="btn btn-primary full-btn" id="checkoutBtn">Checkout →</button>
+  </div>
+</div>
+
+<!-- ============================= WISHLIST DRAWER ============================= -->
+<div class="drawer" id="wishDrawer">
+  <div class="drawer-head"><h3>Wishlist</h3><button class="close-x" onclick="closeAllPanels()">✕</button></div>
+  <div class="cart-items" id="wishItems"></div>
+</div>
+
+<!-- ============================= PRODUCT MODAL ============================= -->
+<div class="modal" id="productModal">
+  <button class="icon-btn modal-close" onclick="closeAllPanels()">✕</button>
+  <div id="productModalBody"></div>
+</div>
+
+<!-- ============================= AUTH MODAL ============================= -->
+<div class="modal modal-sm" id="authModal">
+  <button class="icon-btn modal-close" onclick="closeAllPanels()">✕</button>
+  <div class="auth-tabs">
+    <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</div>
+    <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</div>
+  </div>
+  <form id="loginForm">
+    <div class="field"><label>Email</label><input type="email" id="loginEmail" required placeholder="you@email.com"></div>
+    <div class="field"><label>Password</label><input type="password" id="loginPass" required placeholder="••••••••"></div>
+    <button class="btn btn-primary full-btn" type="submit">Login →</button>
+    <p style="text-align:center;margin-top:16px;color:var(--muted);font-size:.8rem;">Demo mode — any email/password works.</p>
+  </form>
+  <form id="signupForm" class="hidden">
+    <div class="field"><label>Full Name</label><input type="text" id="suName" required placeholder="Your name"></div>
+    <div class="field"><label>Email</label><input type="email" id="suEmail" required placeholder="you@email.com"></div>
+    <div class="field"><label>Password</label><input type="password" id="suPass" required placeholder="••••••••"></div>
+    <button class="btn btn-primary full-btn" type="submit">Create Account →</button>
+  </form>
+</div>
+
+<!-- ============================= ACCOUNT / DASHBOARD MODAL ============================= -->
+<div class="modal" id="accountModal">
+  <button class="icon-btn modal-close" onclick="closeAllPanels()">✕</button>
+  <div id="accountModalBody"></div>
+</div>
+
+<!-- ============================= ADMIN MODAL ============================= -->
+<div class="modal" id="adminModal">
+  <button class="icon-btn modal-close" onclick="closeAllPanels()">✕</button>
+  <div id="adminModalBody"></div>
+</div>
+
+<script>
+/* ======================================================================
+   VERTEX — Frontend Application Layer
+   In production, everything in DATA STORE below would instead be fetched
+   from the Express + MongoDB API in /backend (see routes for the shape).
+   Here it runs entirely in-memory so the experience works standalone.
+====================================================================== */
+
+/* ---------------------------- DATA STORE ---------------------------- */
+const CATS = ['Audio','Vision','Wearables','Home','Accessories'];
+const CAT_COLOR = {Audio:'var(--green)',Vision:'var(--purple)',Wearables:'var(--blue)',Home:'var(--green)',Accessories:'var(--purple)'};
+
+function svgFor(type,color){
+  const c = color||'#39ff8a';
+  const shapes = {
+    earbuds:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="g1" cx="50%" cy="30%"><stop offset="0%" stop-color="${c}" stop-opacity=".9"/><stop offset="100%" stop-color="${c}" stop-opacity="0"/></radialGradient></defs><circle cx="35" cy="45" r="18" fill="none" stroke="${c}" stroke-width="3"/><circle cx="65" cy="45" r="18" fill="none" stroke="${c}" stroke-width="3"/><circle cx="35" cy="45" r="6" fill="${c}"/><circle cx="65" cy="45" r="6" fill="${c}"/><rect x="30" y="60" width="10" height="16" rx="4" fill="${c}" opacity=".6"/><rect x="60" y="60" width="10" height="16" rx="4" fill="${c}" opacity=".6"/></svg>`,
+    glasses:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="38" width="30" height="22" rx="8" fill="none" stroke="${c}" stroke-width="3"/><rect x="55" y="38" width="30" height="22" rx="8" fill="none" stroke="${c}" stroke-width="3"/><line x1="45" y1="48" x2="55" y2="48" stroke="${c}" stroke-width="3"/><line x1="10" y1="42" x2="15" y2="44" stroke="${c}" stroke-width="3"/><line x1="90" y1="42" x2="85" y2="44" stroke="${c}" stroke-width="3"/></svg>`,
+    watch:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="28" width="40" height="44" rx="10" fill="none" stroke="${c}" stroke-width="3"/><circle cx="50" cy="50" r="12" fill="none" stroke="${c}" stroke-width="2"/><line x1="50" y1="50" x2="50" y2="42" stroke="${c}" stroke-width="2"/><line x1="50" y1="50" x2="56" y2="53" stroke="${c}" stroke-width="2"/><rect x="40" y="14" width="20" height="12" rx="4" fill="${c}" opacity=".5"/><rect x="40" y="74" width="20" height="12" rx="4" fill="${c}" opacity=".5"/></svg>`,
+    speaker:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="30" fill="none" stroke="${c}" stroke-width="3"/><circle cx="50" cy="50" r="16" fill="none" stroke="${c}" stroke-width="2"/><circle cx="50" cy="50" r="4" fill="${c}"/><circle cx="50" cy="50" r="38" fill="none" stroke="${c}" stroke-width="1" opacity=".4"/></svg>`,
+    keyboard:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="35" width="76" height="34" rx="6" fill="none" stroke="${c}" stroke-width="3"/><g fill="${c}" opacity=".7"><rect x="20" y="43" width="8" height="8" rx="2"/><rect x="32" y="43" width="8" height="8" rx="2"/><rect x="44" y="43" width="8" height="8" rx="2"/><rect x="56" y="43" width="8" height="8" rx="2"/><rect x="68" y="43" width="8" height="8" rx="2"/><rect x="20" y="55" width="56" height="6" rx="2"/></g></svg>`,
+    vr:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="35" width="70" height="34" rx="16" fill="none" stroke="${c}" stroke-width="3"/><circle cx="38" cy="52" r="9" fill="none" stroke="${c}" stroke-width="2"/><circle cx="62" cy="52" r="9" fill="none" stroke="${c}" stroke-width="2"/><line x1="10" y1="45" x2="15" y2="45" stroke="${c}" stroke-width="3"/><line x1="90" y1="45" x2="85" y2="45" stroke="${c}" stroke-width="3"/></svg>`,
+    ring:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="26" fill="none" stroke="${c}" stroke-width="6"/><circle cx="50" cy="24" r="5" fill="${c}"/></svg>`,
+    drone:`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="10" fill="${c}"/><line x1="50" y1="50" x2="20" y2="20" stroke="${c}" stroke-width="3"/><line x1="50" y1="50" x2="80" y2="20" stroke="${c}" stroke-width="3"/><line x1="50" y1="50" x2="20" y2="80" stroke="${c}" stroke-width="3"/><line x1="50" y1="50" x2="80" y2="80" stroke="${c}" stroke-width="3"/><circle cx="20" cy="20" r="10" fill="none" stroke="${c}" stroke-width="3"/><circle cx="80" cy="20" r="10" fill="none" stroke="${c}" stroke-width="3"/><circle cx="20" cy="80" r="10" fill="none" stroke="${c}" stroke-width="3"/><circle cx="80" cy="80" r="10" fill="none" stroke="${c}" stroke-width="3"/></svg>`
+  };
+  return shapes[type]||shapes.speaker;
+}
+
+let products = [
+  {id:1,name:'VX-1 Neural Earbuds',cat:'Audio',price:249,was:299,rating:4.8,stock:14,svg:'earbuds',color:'#39ff8a',
+   desc:'Adaptive spatial audio earbuds with real-time biometric tuning and 30-hour battery life.',
+   specs:{Driver:'11mm Titanium',Battery:'30hrs total',Latency:'18ms',Weight:'4.2g each'},
+   reviews:[{name:'Aliza K.',text:'The noise cancellation is unreal — I forgot I was on a flight.'},{name:'Devon R.',text:'Best fit I have ever had in an earbud, hands down.'}]},
+  {id:2,name:'Aether AR Glasses',cat:'Vision',price:899,was:null,rating:4.6,stock:6,svg:'glasses',color:'#8b5cf6',
+   desc:'Lightweight augmented reality glasses with contextual overlays and gesture control.',
+   specs:{FOV:'52°',Weight:'46g',Battery:'6hrs',Display:'Micro-LED'},
+   reviews:[{name:'Sam T.',text:'Feels like wearing a normal pair of glasses. The overlay is razor sharp.'}]},
+  {id:3,name:'Pulse Holo Watch',cat:'Wearables',price:399,was:449,rating:4.7,stock:20,svg:'watch',color:'#3ea6ff',
+   desc:'A holographic display watch that projects notifications and vitals just above the wrist.',
+   specs:{Display:'Holo-projection',Battery:'5 days',WaterRes:'10ATM',Sensors:'6-axis'},
+   reviews:[{name:'Priya N.',text:'The hologram trick genuinely makes people stop and stare.'},{name:'Marco L.',text:'Battery life crushes every smartwatch I have owned.'}]},
+  {id:4,name:'Levit Orb Speaker',cat:'Home',price:329,was:null,rating:4.5,stock:9,svg:'speaker',color:'#39ff8a',
+   desc:'A magnetically levitating speaker orb with 360° sound and ambient reactive lighting.',
+   specs:{Power:'40W RMS',Levitation:'Magnetic',Connectivity:'WiFi + BT5.3',Range:'12m'},
+   reviews:[{name:'Jonas W.',text:'It just floats there sounding incredible. Guests always ask about it.'}]},
+  {id:5,name:'Ion Mechanical Deck',cat:'Accessories',price:259,was:289,rating:4.9,stock:17,svg:'keyboard',color:'#8b5cf6',
+   desc:'A hot-swappable mechanical keyboard with per-key RGB and a machined aluminum frame.',
+   specs:{Switches:'Hot-swap',Frame:'CNC Aluminum',Connectivity:'2.4GHz + BT',Backlight:'Per-key RGB'},
+   reviews:[{name:'Rhea S.',text:'Typing on this feels like a completely different sport.'},{name:'Owen F.',text:'Build quality is unreal for the price.'}]},
+  {id:6,name:'Specter VR Headset',cat:'Vision',price:749,was:null,rating:4.4,stock:5,svg:'vr',color:'#3ea6ff',
+   desc:'Ultra-wide field of view VR headset with eye tracking and wireless streaming.',
+   specs:{FOV:'120°',Resolution:'4K per eye',Tracking:'Inside-out + eye',Weight:'380g'},
+   reviews:[{name:'Talia B.',text:'Zero screen door effect. This is the closest thing to real VR immersion yet.'}]},
+  {id:7,name:'Nimbus Smart Ring',cat:'Wearables',price:179,was:199,rating:4.6,stock:0,svg:'ring',color:'#39ff8a',
+   desc:'A titanium smart ring that tracks recovery, sleep and stress with zero screen distraction.',
+   specs:{Material:'Titanium',Battery:'7 days',WaterRes:'IP68',Sensors:'PPG + Temp'},
+   reviews:[{name:'Karim D.',text:'I stopped wearing my watch to bed entirely because of this thing.'}]},
+  {id:8,name:'Drift Nano Drone',cat:'Home',price:599,was:649,rating:4.5,stock:11,svg:'drone',color:'#8b5cf6',
+   desc:'A palm-sized 4K drone with obstacle avoidance and one-tap cinematic flight paths.',
+   specs:{Camera:'4K/60fps',FlightTime:'34min',Range:'8km',Weight:'249g'},
+   reviews:[{name:'Nadia P.',text:'Cinematic mode alone is worth the price. My travel videos leveled up instantly.'}]},
+];
+
+let state = {
+  cart: [],       // {id, qty}
+  wishlist: [],   // ids
+  user: null,     // {name,email}
+  isAdmin: false,
+  orders: [
+    {id:'VX-10234', date:'2026-05-14', total:648, status:'Delivered', items:'VX-1 Neural Earbuds, Nimbus Smart Ring'},
+    {id:'VX-10187', date:'2026-04-02', total:899, status:'Delivered', items:'Aether AR Glasses'}
+  ],
+  contactMessages: [],
+  filters: {cats: new Set(), maxPrice: 900, inStockOnly:false, sort:'pop', search:''}
+};
+
+/* ---------------------------- PRELOADER ---------------------------- */
+(function preload(){
+  let pct = 0;
+  const fill = document.getElementById('preBarFill');
+  const label = document.getElementById('prePct');
+  const timer = setInterval(()=>{
+    pct += Math.random()*18+6;
+    if(pct>=100){pct=100;clearInterval(timer);
+      setTimeout(()=>{document.getElementById('preloader').classList.add('done');playIntro();},350);
+    }
+    fill.style.width = pct+'%';
+    label.textContent = 'INITIALIZING · '+Math.floor(pct)+'%';
+  },220);
+})();
+
+/* ---------------------------- CURSOR GLOW ---------------------------- */
+const glow = document.getElementById('cursor-glow');
+window.addEventListener('mousemove',e=>{
+  glow.style.left = e.clientX+'px';
+  glow.style.top = e.clientY+'px';
+});
+
+/* ---------------------------- NAV SCROLL ---------------------------- */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled', window.scrollY>40);
+});
+
+/* ---------------------------- HERO PARALLAX ---------------------------- */
+window.addEventListener('scroll',()=>{
+  const y = window.scrollY;
+  document.getElementById('blob1').style.transform = `translateY(${y*0.25}px)`;
+  document.getElementById('blob2').style.transform = `translateY(${-y*0.18}px)`;
+  document.getElementById('blob3').style.transform = `translateY(${y*0.32}px)`;
+});
+
+/* ---------------------------- RENDER: MARQUEE ---------------------------- */
+function renderMarquee(){
+  const words = ['NEURAL AUDIO','AUGMENTED VISION','HOLOGRAPHIC DISPLAY','LEVITATING SOUND','MECHANICAL PRECISION','TITANIUM WEARABLES'];
+  const html = words.concat(words).map(w=>`<span>${w}</span>`).join('');
+  document.getElementById('marquee').innerHTML = html;
+}
+
+/* ---------------------------- RENDER: PRODUCT CARD ---------------------------- */
+function cardHTML(p){
+  const inWish = state.wishlist.includes(p.id);
+  const outOfStock = p.stock===0;
+  return `
+  <div class="card glass" data-id="${p.id}" onclick="openProductModal(${p.id})">
+    <div class="card-visual">${svgFor(p.svg,p.color)}</div>
+    <div class="card-cat">${p.cat}</div>
+    <h3>${p.name}</h3>
+    <div class="rating">${'★'.repeat(Math.round(p.rating))}${'☆'.repeat(5-Math.round(p.rating))} <span class="mono" style="color:var(--muted);margin-left:6px;">${p.rating}</span></div>
+    <p class="desc">${p.desc}</p>
+    <div class="card-foot">
+      <div class="price">${p.was?`<span class="was">$${p.was}</span>`:''}$${p.price}</div>
+      <div class="card-btns">
+        <button class="wish-btn ${inWish?'active':''}" onclick="event.stopPropagation();toggleWishlist(${p.id})">${inWish?'♥':'♡'}</button>
+        <button class="add-btn" title="${outOfStock?'Out of stock':'Add to cart'}" onclick="event.stopPropagation();addToCart(${p.id})" ${outOfStock?'style="opacity:.35;pointer-events:none;"':''}>+</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderFeatured(){
+  const featured = products.slice(0,4);
+  document.getElementById('featuredGrid').innerHTML = featured.map(cardHTML).join('');
+}
+
+/* ---------------------------- RENDER: CATEGORIES ---------------------------- */
+function renderCategories(){
+  const icons = {Audio:'🎧',Vision:'🕶',Wearables:'⌚',Home:'🏠',Accessories:'⌨'};
+  document.getElementById('catGrid').innerHTML = CATS.map(c=>`
+    <div class="cat-tile glass" style="--tint:${CAT_COLOR[c]}" onclick="filterByCategoryAndScroll('${c}')">
+      <div>
+        <h4>${icons[c]} ${c}</h4>
+        <span>${products.filter(p=>p.cat===c).length} products</span>
+      </div>
+    </div>`).join('');
+}
+function filterByCategoryAndScroll(cat){
+  state.filters.cats = new Set([cat]);
+  renderCatFilters();
+  renderCatalog();
+  document.getElementById('catalog').scrollIntoView({behavior:'smooth'});
+}
+
+/* ---------------------------- RENDER: CATALOG + FILTERS ---------------------------- */
+function renderCatFilters(){
+  document.getElementById('catFilters').innerHTML = CATS.map(c=>`
+    <label class="filter-opt">
+      <input type="checkbox" value="${c}" ${state.filters.cats.has(c)?'checked':''} onchange="toggleCatFilter('${c}')">
+      ${c} <span class="mono" style="margin-left:auto;color:var(--muted-2);">${products.filter(p=>p.cat===c).length}</span>
+    </label>`).join('');
+}
+function toggleCatFilter(c){
+  state.filters.cats.has(c) ? state.filters.cats.delete(c) : state.filters.cats.add(c);
+  renderCatalog();
+}
+function renderCatalog(){
+  let list = products.filter(p=>{
+    if(state.filters.cats.size && !state.filters.cats.has(p.cat)) return false;
+    if(p.price > state.filters.maxPrice) return false;
+    if(state.filters.inStockOnly && p.stock===0) return false;
+    if(state.filters.search && !p.name.toLowerCase().includes(state.filters.search.toLowerCase()) && !p.cat.toLowerCase().includes(state.filters.search.toLowerCase())) return false;
+    return true;
+  });
+  switch(state.filters.sort){
+    case 'lowhigh': list.sort((a,b)=>a.price-b.price); break;
+    case 'highlow': list.sort((a,b)=>b.price-a.price); break;
+    case 'rating': list.sort((a,b)=>b.rating-a.rating); break;
+    default: list.sort((a,b)=>b.rating*b.stock - a.rating*a.stock);
+  }
+  document.getElementById('catalogGrid').innerHTML = list.length ? list.map(cardHTML).join('') : `<p style="color:var(--muted);grid-column:1/-1;">No products match these filters.</p>`;
+  document.getElementById('resultCount').textContent = list.length+' results';
+}
+document.getElementById('priceRange').addEventListener('input',e=>{
+  state.filters.maxPrice = +e.target.value;
+  document.getElementById('priceVal').textContent = '$'+e.target.value;
+  renderCatalog();
+});
+document.getElementById('inStockOnly').addEventListener('change',e=>{
+  state.filters.inStockOnly = e.target.checked; renderCatalog();
+});
+document.getElementById('sortSelect').addEventListener('change',e=>{
+  state.filters.sort = e.target.value; renderCatalog();
+});
+document.getElementById('resetFilters').addEventListener('click',()=>{
+  state.filters = {cats:new Set(),maxPrice:900,inStockOnly:false,sort:'pop',search:''};
+  document.getElementById('priceRange').value=900;
+  document.getElementById('priceVal').textContent='$900';
+  document.getElementById('inStockOnly').checked=false;
+  document.getElementById('sortSelect').value='pop';
+  renderCatFilters(); renderCatalog();
+});
+
+/* ---------------------------- RENDER: TESTIMONIALS ---------------------------- */
+function renderTestimonials(){
+  const t = [
+    {name:'Aliza Khan',role:'Product Designer',text:'Vertex is the only store where the unboxing feels as engineered as the product itself. Every detail is intentional.'},
+    {name:'Devon Reyes',role:'Software Engineer',text:'I have bought four devices from Vertex and returned zero. That is not normal for hardware in 2026.'},
+    {name:'Priya Nair',role:'Creative Director',text:'The Pulse Holo Watch alone changed how I think about wearables. This is what "premium" is supposed to mean.'},
+    {name:'Marco Lee',role:'Pilot & Drone Operator',text:'Support responded to a warranty question in under two hours. Rare, and deeply appreciated.'}
+  ];
+  document.getElementById('testTrack').innerHTML = t.map(x=>`
+    <div class="test-card glass">
+      <div class="stars">★★★★★</div>
+      <p>"${x.text}"</p>
+      <div class="test-who">
+        <div class="avatar">${x.name.split(' ').map(n=>n[0]).join('')}</div>
+        <div><b>${x.name}</b><small>${x.role}</small></div>
+      </div>
+    </div>`).join('');
+}
+
+/* ---------------------------- CART ---------------------------- */
+function addToCart(id){
+  const item = state.cart.find(c=>c.id===id);
+  if(item) item.qty++; else state.cart.push({id,qty:1});
+  updateBadges(); renderCart();
+  const p = products.find(p=>p.id===id);
+  pushToast(`${p.name} added to cart`);
+}
+function changeQty(id,delta){
+  const item = state.cart.find(c=>c.id===id);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty<=0) state.cart = state.cart.filter(c=>c.id!==id);
+  updateBadges(); renderCart();
+}
+function removeFromCart(id){
+  state.cart = state.cart.filter(c=>c.id!==id);
+  updateBadges(); renderCart();
+}
+function renderCart(){
+  const wrap = document.getElementById('cartItems');
+  if(!state.cart.length){
+    wrap.innerHTML = `<div class="cart-empty"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6h15l-1.5 9h-12z" stroke="currentColor" stroke-width="1.5"/><circle cx="9" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/></svg>Your cart is empty.</div>`;
+    document.getElementById('cartFoot').style.display='none';
+    return;
+  }
+  document.getElementById('cartFoot').style.display='block';
+  let total = 0;
+  wrap.innerHTML = state.cart.map(c=>{
+    const p = products.find(p=>p.id===c.id);
+    total += p.price*c.qty;
+    return `<div class="cart-item">
+      <div class="ci-visual">${svgFor(p.svg,p.color)}</div>
+      <div class="ci-info">
+        <h5>${p.name}</h5>
+        <div class="price">$${p.price}</div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="changeQty(${p.id},-1)">-</button>
+          <span class="mono">${c.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
+          <span class="remove-x" onclick="removeFromCart(${p.id})">Remove</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('cartTotal').textContent = '$'+total;
+}
+document.getElementById('checkoutBtn').addEventListener('click',()=>{
+  if(!state.cart.length) return;
+  if(!state.user){ pushToast('Please login to checkout'); openAuthModal(); return; }
+  const total = state.cart.reduce((s,c)=>s+products.find(p=>p.id===c.id).price*c.qty,0);
+  const names = state.cart.map(c=>products.find(p=>p.id===c.id).name).join(', ');
+  state.orders.unshift({id:'VX-'+Math.floor(10000+Math.random()*89999), date:new Date().toISOString().slice(0,10), total, status:'Processing', items:names});
+  state.cart = [];
+  updateBadges(); renderCart(); closeAllPanels();
+  pushToast('Order placed successfully 🎉');
+});
+
+/* ---------------------------- WISHLIST ---------------------------- */
+function toggleWishlist(id){
+  if(state.wishlist.includes(id)) state.wishlist = state.wishlist.filter(w=>w!==id);
+  else state.wishlist.push(id);
+  updateBadges(); renderFeatured(); renderCatalog(); renderWishlist();
+}
+function renderWishlist(){
+  const wrap = document.getElementById('wishItems');
+  if(!state.wishlist.length){
+    wrap.innerHTML = `<div class="cart-empty">Your wishlist is empty.</div>`;
+    return;
+  }
+  wrap.innerHTML = state.wishlist.map(id=>{
+    const p = products.find(p=>p.id===id);
+    return `<div class="cart-item">
+      <div class="ci-visual">${svgFor(p.svg,p.color)}</div>
+      <div class="ci-info">
+        <h5>${p.name}</h5>
+        <div class="price">$${p.price}</div>
+        <div class="qty-row">
+          <button class="btn btn-ghost" style="padding:6px 14px;font-size:.75rem;" onclick="addToCart(${p.id})">Add to Cart</button>
+          <span class="remove-x" onclick="toggleWishlist(${p.id})">Remove</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function updateBadges(){
+  const cartCount = state.cart.reduce((s,c)=>s+c.qty,0);
+  const wishCount = state.wishlist.length;
+  const cb = document.getElementById('cartBadge'), wb = document.getElementById('wishBadge');
+  cb.textContent = cartCount; cb.classList.toggle('hidden', cartCount===0);
+  wb.textContent = wishCount; wb.classList.toggle('hidden', wishCount===0);
+}
+
+/* ---------------------------- PRODUCT MODAL ---------------------------- */
+function openProductModal(id){
+  const p = products.find(p=>p.id===id);
+  document.getElementById('productModalBody').innerHTML = `
+    <div class="pd-layout">
+      <div class="pd-visual">${svgFor(p.svg,p.color)}</div>
+      <div>
+        <div class="card-cat">${p.cat}</div>
+        <h2 style="margin:8px 0 10px;">${p.name}</h2>
+        <div class="rating">${'★'.repeat(Math.round(p.rating))}${'☆'.repeat(5-Math.round(p.rating))} <span class="mono" style="color:var(--muted);margin-left:6px;">${p.rating} · ${p.reviews.length} reviews</span></div>
+        <p style="color:var(--muted);margin:16px 0;line-height:1.6;">${p.desc}</p>
+        <div class="price" style="font-size:1.6rem;">${p.was?`<span class="was">$${p.was}</span>`:''}$${p.price}</div>
+        <div class="pd-specs">${Object.entries(p.specs).map(([k,v])=>`<div><b>${v}</b>${k}</div>`).join('')}</div>
+        <div style="display:flex;gap:12px;margin-top:20px;">
+          <button class="btn btn-primary" onclick="addToCart(${p.id})" ${p.stock===0?'disabled style="opacity:.4;"':''}>${p.stock===0?'Out of Stock':'Add to Cart'}</button>
+          <button class="btn btn-ghost" onclick="toggleWishlist(${p.id});openProductModal(${p.id});">${state.wishlist.includes(p.id)?'♥ Wishlisted':'♡ Wishlist'}</button>
+        </div>
+        <div class="pd-reviews">
+          ${p.reviews.map(r=>`<div class="pd-review"><h6>${r.name}</h6><p>"${r.text}"</p></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  openPanel('productModal');
+}
+
+/* ---------------------------- PANEL / DRAWER MANAGEMENT ---------------------------- */
+function openPanel(id){
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById(id).classList.add('show');
+}
+function closeAllPanels(){
+  document.getElementById('overlay').classList.remove('show');
+  ['cartDrawer','wishDrawer','productModal','authModal','accountModal','adminModal'].forEach(id=>{
+    document.getElementById(id).classList.remove('show');
+  });
+}
+document.getElementById('overlay').addEventListener('click', closeAllPanels);
+function openCart(){ renderCart(); openPanel('cartDrawer'); }
+function openWishlist(){ renderWishlist(); openPanel('wishDrawer'); }
+document.getElementById('cartToggle').addEventListener('click', openCart);
+document.getElementById('wishToggle').addEventListener('click', openWishlist);
+
+/* ---------------------------- AUTH ---------------------------- */
+function openAuthModal(){ openPanel('authModal'); }
+function switchAuthTab(tab){
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabSignup').classList.toggle('active', tab==='signup');
+  document.getElementById('loginForm').classList.toggle('hidden', tab!=='login');
+  document.getElementById('signupForm').classList.toggle('hidden', tab!=='signup');
+}
+document.getElementById('loginForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  state.user = {name: email.split('@')[0], email};
+  closeAllPanels(); pushToast('Welcome back, '+state.user.name+'!');
+});
+document.getElementById('signupForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name = document.getElementById('suName').value;
+  const email = document.getElementById('suEmail').value;
+  state.user = {name, email};
+  closeAllPanels(); pushToast('Account created — welcome, '+name+'!');
+});
+document.getElementById('accountToggle').addEventListener('click',()=>{
+  if(state.user) openAccountModal(); else openAuthModal();
+});
+
+/* ---------------------------- ACCOUNT DASHBOARD ---------------------------- */
+function openAccountModal(){
+  renderAccountModal('orders');
+  openPanel('accountModal');
+}
+function renderAccountModal(tab){
+  const u = state.user;
+  let body = `
+    <h2>My Account</h2>
+    <p style="color:var(--muted);margin:6px 0 24px;">${u.name} · ${u.email}</p>
+    <div class="dash-tabs">
+      <div class="dash-tab ${tab==='orders'?'active':''}" onclick="renderAccountModal('orders')">Orders</div>
+      <div class="dash-tab ${tab==='profile'?'active':''}" onclick="renderAccountModal('profile')">Profile</div>
+      <div class="dash-tab ${tab==='wishlist'?'active':''}" onclick="renderAccountModal('wishlist')">Wishlist</div>
+    </div>`;
+  if(tab==='orders'){
+    body += state.orders.length ? state.orders.map(o=>`
+      <div class="order-row">
+        <div><b>${o.id}</b><br><span style="color:var(--muted);font-size:.8rem;">${o.items}</span></div>
+        <div style="text-align:right;"><span class="status">${o.status}</span><br><span class="mono" style="font-size:.8rem;">$${o.total} · ${o.date}</span></div>
+      </div>`).join('') : `<p style="color:var(--muted);">No orders yet.</p>`;
+  } else if(tab==='profile'){
+    body += `
+      <div class="field"><label>Full Name</label><input type="text" value="${u.name}" id="profName"></div>
+      <div class="field"><label>Email</label><input type="email" value="${u.email}" id="profEmail"></div>
+      <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+      <button class="btn btn-ghost" style="margin-left:10px;" onclick="logout()">Logout</button>`;
+  } else if(tab==='wishlist'){
+    body += state.wishlist.length ? `<div class="grid-products">${state.wishlist.map(id=>cardHTML(products.find(p=>p.id===id))).join('')}</div>` : `<p style="color:var(--muted);">Nothing saved yet.</p>`;
+  }
+  document.getElementById('accountModalBody').innerHTML = body;
+}
+function saveProfile(){
+  state.user.name = document.getElementById('profName').value;
+  state.user.email = document.getElementById('profEmail').value;
+  pushToast('Profile updated'); renderAccountModal('profile');
+}
+function logout(){ state.user=null; closeAllPanels(); pushToast('Logged out'); }
+
+/* ---------------------------- ADMIN PANEL ---------------------------- */
+function openAdminModal(){
+  if(!state.isAdmin){
+    const pass = prompt('Admin password (demo: admin123):');
+    if(pass!=='admin123'){ pushToast('Incorrect password'); return; }
+    state.isAdmin = true;
+  }
+  renderAdminModal();
+  openPanel('adminModal');
+}
+function renderAdminModal(){
+  document.getElementById('adminModalBody').innerHTML = `
+    <h2>Admin Panel</h2>
+    <p style="color:var(--muted);margin:6px 0 26px;">Manage products &amp; view messages. Changes reflect instantly across the storefront.</p>
+    <h4 style="margin-bottom:14px;color:var(--muted);text-transform:uppercase;font-size:.8rem;letter-spacing:.08em;">Add New Product</h4>
+    <div class="admin-form">
+      <div class="field"><label>Name</label><input id="apName" type="text"></div>
+      <div class="field"><label>Category</label>
+        <select id="apCat" style="width:100%;padding:15px 18px;border-radius:12px;background:var(--glass-soft);border:1px solid var(--border-strong);color:var(--text);">
+          ${CATS.map(c=>`<option>${c}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Price ($)</label><input id="apPrice" type="number"></div>
+      <div class="field"><label>Stock</label><input id="apStock" type="number"></div>
+      <div class="field full"><label>Description</label><input id="apDesc" type="text"></div>
+    </div>
+    <button class="btn btn-primary" onclick="adminAddProduct()">+ Add Product</button>
+
+    <h4 style="margin:34px 0 14px;color:var(--muted);text-transform:uppercase;font-size:.8rem;letter-spacing:.08em;">Inventory (${products.length})</h4>
+    <table class="admin-table">
+      <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th></th></tr></thead>
+      <tbody>
+        ${products.map(p=>`
+          <tr>
+            <td>${p.name}</td><td>${p.cat}</td><td class="mono">$${p.price}</td><td class="mono">${p.stock}</td>
+            <td><button onclick="adminEditStock(${p.id})">Edit Stock</button><button class="del" onclick="adminDeleteProduct(${p.id})">Delete</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+
+    <h4 style="margin:34px 0 14px;color:var(--muted);text-transform:uppercase;font-size:.8rem;letter-spacing:.08em;">Contact Messages (${state.contactMessages.length})</h4>
+    ${state.contactMessages.length ? state.contactMessages.map(m=>`
+      <div class="order-row" style="display:block;">
+        <b>${m.name}</b> <span style="color:var(--muted);">· ${m.email}</span>
+        <p style="color:var(--muted);margin-top:6px;font-size:.85rem;">${m.message}</p>
+      </div>`).join('') : `<p style="color:var(--muted);">No messages yet.</p>`}
+  `;
+}
+function adminAddProduct(){
+  const name = document.getElementById('apName').value.trim();
+  if(!name) return pushToast('Enter a product name');
+  const cat = document.getElementById('apCat').value;
+  const price = +document.getElementById('apPrice').value || 100;
+  const stock = +document.getElementById('apStock').value || 0;
+  const desc = document.getElementById('apDesc').value || 'A premium Vertex device.';
+  const svgMap = {Audio:'earbuds',Vision:'glasses',Wearables:'watch',Home:'speaker',Accessories:'keyboard'};
+  const newId = Math.max(...products.map(p=>p.id))+1;
+  products.push({id:newId,name,cat,price,was:null,rating:4.5,stock,svg:svgMap[cat]||'speaker',color:CAT_COLOR[cat].includes('green')?'#39ff8a':CAT_COLOR[cat].includes('purple')?'#8b5cf6':'#3ea6ff',desc,specs:{Type:cat,Model:'VX-'+newId},reviews:[]});
+  renderAll(); renderAdminModal(); pushToast('Product added: '+name);
+}
+function adminEditStock(id){
+  const p = products.find(p=>p.id===id);
+  const val = prompt('New stock level for '+p.name+':', p.stock);
+  if(val===null) return;
+  p.stock = Math.max(0,+val||0);
+  renderAll(); renderAdminModal(); pushToast('Stock updated');
+}
+function adminDeleteProduct(id){
+  if(!confirm('Delete this product?')) return;
+  products = products.filter(p=>p.id!==id);
+  renderAll(); renderAdminModal(); pushToast('Product deleted');
+}
+
+/* ---------------------------- CONTACT FORM ---------------------------- */
+document.getElementById('contactForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('cName').value;
+  const email = document.getElementById('cEmail').value;
+  const message = document.getElementById('cMessage').value;
+  const btn = document.getElementById('sendBtn');
+  btn.textContent = 'Sending...'; btn.style.opacity=.7;
+  setTimeout(()=>{
+    state.contactMessages.push({name,email,message,date:new Date().toISOString()});
+    document.getElementById('contactForm').classList.add('hidden');
+    document.getElementById('successBox').classList.add('show');
+    btn.textContent='Send Message →'; btn.style.opacity=1;
+  },900);
+});
+function resetContactForm(){
+  document.getElementById('contactForm').reset();
+  document.getElementById('contactForm').classList.remove('hidden');
+  document.getElementById('successBox').classList.remove('show');
+}
+
+/* ---------------------------- SEARCH ---------------------------- */
+const searchWrap = document.getElementById('searchWrap');
+document.getElementById('searchToggle').addEventListener('click',()=>{
+  searchWrap.classList.toggle('open');
+  if(searchWrap.classList.contains('open')) document.getElementById('searchInput').focus();
+});
+document.getElementById('searchInput').addEventListener('input',e=>{
+  const q = e.target.value.toLowerCase();
+  const sugg = document.getElementById('suggestions');
+  if(!q){ sugg.classList.remove('show'); return; }
+  const matches = products.filter(p=>p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q)).slice(0,5);
+  sugg.innerHTML = matches.length ? matches.map(p=>`<div class="sugg-item" onclick="openProductModal(${p.id});searchWrap.classList.remove('open');"><span>${p.name}</span><span>$${p.price}</span></div>`).join('') : `<div class="sugg-item"><span>No matches</span></div>`;
+  sugg.classList.add('show');
+});
+document.getElementById('searchInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    state.filters.search = e.target.value;
+    renderCatalog();
+    document.getElementById('catalog').scrollIntoView({behavior:'smooth'});
+    searchWrap.classList.remove('open');
+  }
+});
+
+/* ---------------------------- THEME TOGGLE ---------------------------- */
+document.getElementById('themeToggle').addEventListener('click',()=>{
+  document.documentElement.classList.toggle('light');
+});
+
+/* ---------------------------- MUSIC TOGGLE (ambient tone via WebAudio) ---------------------------- */
+let audioCtx=null, osc=null, gainNode=null, musicOn=false;
+document.getElementById('musicToggle').addEventListener('click',function(){
+  musicOn = !musicOn;
+  this.textContent = musicOn ? '🔊' : '🔇';
+  if(musicOn){
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    osc = audioCtx.createOscillator();
+    gainNode = audioCtx.createGain();
+    osc.type = 'sine'; osc.frequency.value = 110;
+    gainNode.gain.value = 0.0001;
+    osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+    osc.start();
+    gainNode.gain.exponentialRampToValueAtTime(0.035, audioCtx.currentTime+1.2);
+    pushToast('Ambient sound on');
+  } else if(osc){
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+0.6);
+    osc.stop(audioCtx.currentTime+0.7);
+    pushToast('Ambient sound off');
+  }
+});
+
+/* ---------------------------- TOAST ---------------------------- */
+function pushToast(msg){
+  const stack = document.getElementById('toastStack');
+  const t = document.createElement('div');
+  t.className = 'toast glass';
+  t.innerHTML = `<span class="dot"></span><span>${msg}</span>`;
+  stack.appendChild(t);
+  requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),500); },3200);
+}
+
+/* ---------------------------- SCROLL REVEAL (GSAP) ---------------------------- */
+function initScrollAnimations(){
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.utils.toArray('.reveal').forEach((el,i)=>{
+    gsap.to(el,{
+      opacity:1, y:0, duration:1, ease:'power3.out',
+      scrollTrigger:{trigger:el, start:'top 85%'}
+    });
+  });
+  gsap.utils.toArray('.card').forEach((el,i)=>{
+    gsap.fromTo(el,{opacity:0,y:50,scale:.96},{
+      opacity:1,y:0,scale:1,duration:.8,ease:'power3.out',delay:(i%4)*0.06,
+      scrollTrigger:{trigger:el,start:'top 92%'}
+    });
+  });
+  gsap.utils.toArray('.cat-tile').forEach((el,i)=>{
+    gsap.fromTo(el,{opacity:0,y:40},{opacity:1,y:0,duration:.7,delay:i*0.08,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 92%'}});
+  });
+  gsap.fromTo('#hero .eyebrow',{opacity:0,y:20},{opacity:1,y:0,duration:.8,delay:.2});
+  gsap.fromTo('#hero h1',{opacity:0,y:40},{opacity:1,y:0,duration:1,delay:.4});
+  gsap.fromTo('#hero p',{opacity:0,y:30},{opacity:1,y:0,duration:1,delay:.6});
+  gsap.fromTo('#hero .hero-actions',{opacity:0,y:30},{opacity:1,y:0,duration:1,delay:.8});
+}
+
+/* ---------------------------- CARD TILT ---------------------------- */
+document.addEventListener('mousemove',e=>{
+  const card = e.target.closest('.card');
+  document.querySelectorAll('.card').forEach(c=>{ if(c!==card) c.style.transform=''; });
+  if(!card) return;
+  const r = card.getBoundingClientRect();
+  const x = (e.clientX - r.left)/r.width - 0.5;
+  const y = (e.clientY - r.top)/r.height - 0.5;
+  card.style.transform = `perspective(600px) rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`;
+});
+
+/* ---------------------------- INIT ---------------------------- */
+function renderAll(){
+  renderMarquee(); renderFeatured(); renderCategories(); renderCatFilters(); renderCatalog(); renderTestimonials(); updateBadges();
+}
+function playIntro(){
+  initScrollAnimations();
+}
+renderAll();
+document.getElementById('priceVal').textContent = '$900';
+</script>
+</body>
+</html>
